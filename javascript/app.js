@@ -12,11 +12,12 @@
 
           a.addClass("giph");
       
-          a.attr("data-team", giphys[i]);
+          a.attr("data-sports", giphys[i]);
       
           a.text(giphys[i]);
     
           $("#giphy-view").append(a);
+          
         }
     };
 
@@ -31,12 +32,28 @@
         renderButtons();
     });
 
-    $("#giphy-view").on("click", function(event) {
+    $(document.body).on("click", ".toggle-giph", function() {
+
+        var state = $(this).attr("data-state");
+        
+        if (state == "still"){
+          $(this).attr("src", $(this).attr("data-animate"));
+          state = $(this).attr("data-state", "animate");
+        }
+        else {
+          $(this).attr("src", $(this).attr("data-still"));
+          state = $(this).attr("data-state", "still");
+        }
+      
+      });
+
+    $(document.body).on("click", ".giph", function() {
+
+        var sports = $(this).attr("data-sports");
 
         event.preventDefault();
 
-        var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=9vTuLskEWKQPmQQvX6cL6ynEuxnBsLEb&q=" + giphys +
-        "&limit=10&offset=0&rating=PG&lang=en"
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sports + "&api_key=9vTuLskEWKQPmQQvX6cL6ynEuxnBsLEb&limit=10";
 
         $.ajax({
             url: queryURL,
@@ -44,19 +61,29 @@
         })
     
         .then(function(response) {
-            console.log(queryURL);
 
             console.log(response);
     
             var results = response.data;
 
             for (var i = 0; i < results.length; i++) {
+                if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                var giphStill = "https://media1.giphy.com/media/" + results[i].id + "/200_s.gif";
+                var giphAnimate = "https://media1.giphy.com/media/" + results[i].id + "/200.gif";
 
                 var teamDiv = $("<div>");
 
-                var p = $("<p>").text("Rating: " + results[i].rating);
+                var p = $("<p>");
+                p.text("Rating: " + results[i].rating);
 
                 var teamImage = $("<img>");
+                teamImage.attr ({
+                    src: giphStill,
+                    "data-still": giphStill,
+                    "data-animate": giphAnimate,
+                    "data-state": "still",
+                    class: "toggle-giph"
+                });
 
                 teamImage.attr("src", results[i].images.fixed_height.url);
 
@@ -64,6 +91,8 @@
                 teamDiv.append(teamImage);
 
                $("#gif-dump").prepend(teamDiv);
+            }
+         
             }
         });
     });
