@@ -8,15 +8,15 @@
 
         for (let i = 0; i < giphys.length; i++) {
 
-          var a = $("<button>");
+          var button = $("<button>");
 
-          a.addClass("giph");
+          button.addClass("giph");
       
-          a.attr("data-sports", giphys[i]);
+          button.attr("data-sports", giphys[i]);
       
-          a.text(giphys[i]);
+          button.text(giphys[i]);
     
-          $("#giphy-view").append(a);
+          $("#giphy-view").append(button);
           
         }
     };
